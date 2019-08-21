@@ -1,0 +1,31 @@
+.container-style{
+	margin-top: 3%;
+	margin-bottom: 3%;
+}
+
+.board {
+	width:90%;
+	margin-top: 1.4%;
+}
+
+.board_example {
+	width:100%;
+	margin: 20% 20%;
+}
+
+.btn-full {
+	width: 100%;
+	margin-top: 1%;
+}
+
+.modal_promote {
+	width: 30% !important;
+}
+
+.errorlist{
+	color:#f44336;
+}
+
+.table-moves td {
+	padding: 10px 10px;
+}

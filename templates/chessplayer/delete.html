@@ -1,0 +1,16 @@
+{% extends 'base/base.html' %}
+
+{% load staticfiles %}
+
+{% csrf_token %}
+
+{% block header %} &nbsp;&nbsp; <i class="fas fa-chess"></i> &nbsp; Delete Chessplayer {% endblock %}
+
+{% block content %}
+	<form method="post">
+		{% csrf_token %}
+		<h3>Delete {{ object.username }}. Are you sure ?</h3>
+		<button type='submit' class="waves-effect waves-light btn red"><i class="material-icons left">delete</i>Delete</button>
+		<a href="{% url 'chessplayer:index' %}" class="waves-effect waves-light btn blue"><i class="material-icons left">cancel</i>Cancel</a>
+	</form>
+{% endblock %}

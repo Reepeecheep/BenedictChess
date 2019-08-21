@@ -1,0 +1,87 @@
+{% extends 'base/base.html' %}
+
+{% load staticfiles %}
+
+{% csrf_token %}
+
+{% block header %} &nbsp;&nbsp; <i class="fas fa-chess"></i> &nbsp; Match #{{ match.id }} {% endblock %}
+
+{% block content %}
+	<h4>Game id #{{ match.id }} - <span id="whoplay">{{turn}}</span> moves</h4>
+	<div class="row">
+		<!--<div class="col s2"></div>-->
+		<div class="col s7">
+			<script type="text/javascript">
+				/* rnbqkbnr/ppp1pppp/8/3p4/4P3/3P4/PPP2PPP/RNBQKBNR */
+				var id = "{{match.id}}";
+				var turn = "{{turn}}";
+				var init_position = "{% if moves|length > 0 %}{{moves.0.fen}}{% else %}{{'start'}}{% endif %}";
+				var boardtheme = "{{match.board_theme}}";
+				var piecetheme = "{{match.piece_theme}}";
+			</script>
+
+			<div id="board" class="board" align="center"></div>
+		</div>
+		<div class="col s4">
+			<div class="card teal darken-2">
+				<div class="card-content white-text">
+					<span class="card-title">{{ match.white_id }} vs {{ match.black_id }}</span>
+				</div>
+				<div>
+					<table class="table-moves centered bordered highlight green lighten-4">
+						<tr>
+							{% for move in moves|dictsort:"id" %}
+								<td name="{{ move.fen }}">{{ move.notation }}</td>
+								{% if forloop.counter|divisibleby:2 %}
+									</tr>
+									<tr>
+								{% endif %}
+							{% endfor %}
+
+							{% if not moves|length|divisibleby:2 %}
+								<td id = 'last_move'>&nbsp;</td>
+							{% endif %}
+						</tr>
+					</table>
+				</div>
+				<div class="card-action">
+					<a class="btn waves-effect waves-light"><i class="material-icons left" >flag</i>Draw</a>
+					<a class="btn waves-effect waves-light red accent-2"><i class="material-icons left" >error</i>Resign</a>
+					<a id="flipOrientationBtn" class="btn waves-effect waves-light indigo accent-1 btn-full"><i class="material-icons left">autorenew</i>Flip board</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Modal Structure -->
+	<div id="modal1" class="modal modal_promote">
+		<div class="modal-content">
+			<h4>Choose your piece:</h4>
+			<img id="QImg" class="modal-action modal-close btn blue accent-1 promote" src="{% static 'img/chesspieces/wikipedia/wQ.png' %}"/>
+			<img id="RImg" class="modal-action modal-close btn blue accent-1 promote" src="{% static 'img/chesspieces/wikipedia/wR.png' %}"/>
+			<img id="BImg" class="modal-action modal-close btn blue accent-1 promote" src="{% static 'img/chesspieces/wikipedia/wB.png' %}"/>
+			<img id="NImg" class="modal-action modal-close btn blue accent-1 promote" src="{% static 'img/chesspieces/wikipedia/wN.png' %}"/>
+		</div>
+	</div>
+	<!--
+	<div>
+		<span class="grey-text text-darken-4">Controls</span>
+		<button id="getPositionBtn">Dame el Tablero</button>
+		<button id="setRuyLopezBtn">Joder La Esañola</button>
+		<button id="setRookCheckmateBtn">Mate con atún y tomate</button>
+		<button id="reiniciar">Otra vez</button>
+		<button id="borrar">Limpiar</button>
+		<input type="button" id="move1Btn" value="e2-e4" />
+		<input type="button" id="showOrientationBtn" value="Show orientation in console" />
+
+		<input type="button" id="whiteOrientationBtn" value="White orientation" />
+		<input type="button" id="blackOrientationBtn" value="Black orientation" />
+
+		<input type="button" id="cambiartema" value="wkipedia" />
+	</div>
+	-->
+{% endblock %}
+
+{% block extrajs %}
+	<script type="text/javascript" src="{% static 'js/match/board.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,74 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/chessboard.css' %}">
+
+	{% block extrahead %}
+	{% endblock %}
+
+	<title>{% block title %} Benedict Chess {% endblock %}</title>
+</head>
+<body>
+	<h4>{% block header %} &nbsp;&nbsp; <i class="fas fa-chess"></i> &nbsp;Welcome to Benedict Chess {% endblock %}</h4>
+	
+	<nav>
+		<div class="nav-wrapper teal">
+			<a href="#" class="brand-logo right hide-on-med-and-down"><i class="material-icons">layers</i>  Benedict Chess</a>
+			<ul id="nav-mobile" class="left">
+				<li><a href="/">Home</a></li>
+				<li><a href="/chessplayer">Chessplayers</a></li>
+				<li><a href="/match">Matches</a></li>
+				<li><a href="badges.html">Rules</a></li>
+				<li><a href="/admin">Administrador</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="container container-style">
+		{% block content %} {% endblock %}
+	</div>
+
+	{% block footer %}
+		<footer class="page-footer teal">
+			<div class="container">
+				<div class="row">
+					<div class="col l6 s12">
+						<h5 class="white-text">Benedict Chess</h5>
+						<p class="grey-text text-lighten-4">Hola</p>
+					</div>
+					<div class="col l4 offset-l2 s12">
+						<h5 class="white-text">Links</h5>
+						<ul>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 1</a></li>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 2</a></li>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 3</a></li>
+							<li><a class="grey-text text-lighten-3" href="#!">Link 4</a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="footer-copyright">
+				<div class="container">
+					© 2019 Reepeecheep Chess
+					<a class="grey-text text-lighten-4 right" href="#!">More Links</a>
+				</div>
+			</div>
+		</footer>
+	{% endblock %}
+
+	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	<script type="text/javascript" src="{% static 'js/chessboard.js' %}"></script>
+	<script type="text/javascript" src="{% static 'js/chessboardjs-themes.js' %}"></script>
+
+	{% block extrajs %}
+	{% endblock %}
+</body>
+</html>

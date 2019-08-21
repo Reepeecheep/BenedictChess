@@ -1,0 +1,63 @@
+{% extends 'base/base.html' %}
+
+{% load staticfiles %}
+
+{% csrf_token %}
+
+{% block header %} &nbsp;&nbsp; <i class="fas fa-chess"></i> &nbsp; Matches {% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col s9"></div>
+		<div class="col s3">
+			<a href="{% url 'match:add'  %}" class="waves-effect waves-light btn"><i class="material-icons left">add</i>New Match</a>
+		</div>
+	</div>
+	<table class="striped responsive-table">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Players</th>
+				<th>Date</th>
+				<th>Board</th>
+				<th>Pieces</th>
+				<th>Active</th>
+				<th>Winner</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% if object_list %}
+			{% for match in object_list %}
+			<tr>
+				<td>{{ match.id }}</td>
+				<td><i class="material-icons left">contacts</i>{{ match.white_id }} vs {{ match.black_id }}</td>
+				<td>{{ match.date_game }}</td>
+				<td>{{ match.board_theme }}</td>
+				<td>{{ match.piece_theme }}</td>
+				<td>{{ match.active }}</td>
+				<td>
+					{% if match.winner_id != None %}
+						{{ match.winner_id }}
+					{% elif active == 0 %}
+						{{ 'draw' }}
+					{% else %}
+						{{ '-' }}
+					{% endif %}</td>
+				<th>
+					<a href="{% url 'match:view' match.id %}" class="btn-floating btn-large waves-effect waves-light">
+						<i class="material-icons left">remove_red_eye</i>
+					</a>
+				</th>
+			</tr>
+			{% endfor %}
+			{% else %}
+				<td colspan="8">No data found</td>
+			{% endif %}
+		</tbody>
+	</table>
+{% endblock %}
+
+{% block extrajs %}
+	<!-- JS -->
+{% endblock %}

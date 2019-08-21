@@ -1,0 +1,51 @@
+{% extends 'base/base.html' %}
+
+{% load staticfiles %}
+
+{% csrf_token %}
+
+{% block header %} &nbsp;&nbsp; <i class="fas fa-chess"></i> &nbsp; Chessplayers {% endblock %}
+
+{% block content %}
+	<div class="row">
+		<div class="col s9"></div>
+		<div class="col s3">
+			<a href="{% url 'chessplayer:add' %}" class="waves-effect waves-light btn"><i class="material-icons left">add</i>New ChessPlayer</a>
+		</div>
+	</div>
+	<table class="striped responsive-table">
+		<thead>
+			<tr>
+				<th>#</th>
+				<th>Username</th>
+				<th>Email</th>
+				<th>Actions</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% if object_list %}
+				{% for player in object_list %}
+				<tr>
+					<td>{{ player.id }}</td>
+					<td>{{ player.username }}</td>
+					<td>{{ player.email }}</td>
+					<th>
+						<a href="{% url 'chessplayer:edit' player.id %}" class="btn-floating btn-large waves-effect waves-light">
+							<i class="material-icons left">edit</i>
+						</a>
+						<a href="{% url 'chessplayer:delete' player.id %}" class="btn-floating btn-large waves-effect waves-light red">
+							<i class="material-icons left">delete</i>
+						</a>
+					</th>
+				</tr>
+				{% endfor %}
+			{% else %}
+				<td colspan="4">No data found</td>
+			{% endif %}
+		</tbody>
+	</table>
+{% endblock %}
+
+{% block extrajs %}
+	<!-- JS -->
+{% endblock %}
