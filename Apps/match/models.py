@@ -15,13 +15,15 @@ class Match(models.Model):
 	#	return ("{} {} {} {} {} {} {} {}".format(self.id, self.white_id, self.black_id, self.date_game, self.board_theme, self.piece_theme, self.active, self.winner_id))
 
 class Match_Move(models.Model):
+	TURN = (
+		('white', 'WHITE'),
+		('black', 'BLACK'),
+	)
 	match_id = models.ForeignKey(Match, null=False, on_delete=models.CASCADE, related_name='%(class)s_match_id')
 	notation = models.TextField(null=False, default='')
 	fen = models.TextField(null=False, default='')
+	turn = models.TextField(null=False, choices=TURN, default='WHITE')
+	castling = models.TextField(null=False, default='KQkq')
 
-class Match_Castling_Options(models.Model):
-	match_id = models.OneToOneField(Match, null=False, on_delete=models.CASCADE, related_name='%(class)s_match_id')
-	white_sort = models.BooleanField(null=False, default=True)
-	white_large = models.BooleanField(null=False, default=True)
-	black_sort = models.BooleanField(null=False, default=True)
-	black_large = models.BooleanField(null=False, default=True)
+	def __str__(self):
+		return ("Match:{} Notation:{} FEN:{} {} {}".format(self.match_id, self.notation, self.fen, self.turn, self.castling))

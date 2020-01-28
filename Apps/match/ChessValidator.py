@@ -1,4 +1,4 @@
-from Apps.match.models import Match, Match_Castling_Options
+from Apps.match.models import Match, Match_Move
 
 class Piece():
 	def __init__(self, color, source, target, board, match_id = None):
@@ -268,52 +268,26 @@ class King(Piece):
 				self.rock_castling_source = rock_require[self.target]
 
 			if (self.target[0] == 'g'):
-				type_castl = 'sort'
+				type_castl = 'k'
 			else:
-				type_castl = 'large'
+				type_castl = 'q'
 
-			castling = Match_Castling_Options.objects.filter(
-				match_id = self.match
-			)
+			m = Match_Move.objects.filter(match_id = self.match).order_by('-id')
 
-			if (castling.exists()):
-				for e in castling:
-					if (self.color == 'b' and type_castl == 'large' and e.black_large == False):
-						#print ("Enroque {} {}".format(type_castl, 'black'),e.black_large)
-						#if (e.black_large == False):
-						return False
-					elif (self.color == 'b' and type_castl == 'sort' and e.black_sort == False):
-						#print ("Enroque {} {}".format(type_castl, 'black'),e.black_sort)
-						#if (e.black_sort == False):
-						return False
-					if (self.color == 'w' and type_castl == 'large' and e.white_large == False):
-						#print ("Enroque {} {}".format(type_castl, 'white'),e.white_large)
-						#if (e.white_large == False):
-						return False
-					elif (self.color == 'w' and type_castl == 'sort' and e.white_sort == False):
-						#print ("Enroque {} {}".format(type_castl, 'white'),e.white_sort)
-						#if (e.white_sort == False):
-						return False	
-			else:
-				if (self.color == 'b'):
-					castling = Match_Castling_Options.objects.create(
-						match_id = self.match,
-						black_large = False,
-						black_sort  = False
-					)
-				else:
-					castling = Match_Castling_Options.objects.create(
-						match_id = self.match,
-						white_large = False,
-						white_sort  = False
-					)
+			if (m.exists()):
+				op = False
+				if (self.color == 'b' and type_castl == 'q' and 'q' in m[0].castling):
+					op = True
+				elif (self.color == 'b' and type_castl == 'k' and 'k' in m[0].castling):
+					op = True
+				elif (self.color == 'w' and type_castl == 'q' and 'Q' in m[0].castling):
+					op = True
+				elif (self.color == 'w' and type_castl == 'k' and 'K' in m[0].castling):
+					op = True
 			
-			if (king_inital and empty_squares and rock_square):
-				#print ("Intento de Enroque de {} a {}".format(self.source, self.target))
+			if (king_inital and empty_squares and rock_square and op):
 				return True
-			#else:
-			#	print ("Enroque Fallido")
-
+				
 		return False
 
 	def get_attacks(self, pos = 'target'):
@@ -348,15 +322,12 @@ class King(Piece):
 					attack_zone.append([aux])
 			except:
 				None
-		''' PRINT '''
 
 		if (self.castling_try == True and self.rock_castling_target != False and self.rock_castling_source != False):
 			rock = Rock(self.color, self.rock_castling_source, self.rock_castling_target, self.board)
 			rock_attack = rock.get_attacks()
 			attack_zone += rock_attack
-			#print ("Ataque de la torre ", rock_attack)
 
-		#print ("Rey ataca las casillas: ", attack_zone)
 		return attack_zone
 
 class Move_Validator:
@@ -366,13 +337,19 @@ class Move_Validator:
 		self.board_fen = board_fen
 		self.piece = piece
 		self.board = self.board_result = self.change_notation()
+		self.promote = False
 
 	def __repr__(self):
 		#return "{} moves from {} to {}".format(self.piece,self.source,self.target)
 		piece = self.piece[1]
+		aux = ''
 		if (self.piece[1] == 'P'):
 			piece = ''
-		return "{}{}".format(piece, self.target)
+		if (self.promote == True):
+			piece = ''
+			aux = self.piece[1]
+
+		return "{}{}{}".format(piece, self.target,aux)
 
 	def change_notation(self):
 		board = {}
@@ -412,8 +389,9 @@ class Move_Validator:
 
 		if (promote_val):
 			valid = True
+			self.promote = True
 			
-		wins = False
+		winner = False
 
 		if (valid):
 			attacks = piece.get_attacks()
@@ -432,12 +410,16 @@ class Move_Validator:
 					for j in i:
 						if (j in self.board.keys()):
 							if piece.color == 'w':
+								if winner == False and self.board_result[j] == 'bK':
+									winner = 'w'
 								self.board_result[j] = self.board_result[j].replace('b', 'w')
 								if (self.piece[1] not in ('P', 'N')):
 									break
 							else:
+								if winner == False and self.board_result[j] == 'wK':
+									winner = 'b'
 								self.board_result[j] = self.board_result[j].replace('w', 'b')
 								if (self.piece[1] not in ('P', 'N')):
 									break
 				
-		return valid, attacks, self.board_result, wins
+		return valid, attacks, self.board_result, winner

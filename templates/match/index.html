@@ -21,7 +21,6 @@
 				<th>Date</th>
 				<th>Board</th>
 				<th>Pieces</th>
-				<th>Active</th>
 				<th>Winner</th>
 				<th>Actions</th>
 			</tr>
@@ -35,7 +34,6 @@
 				<td>{{ match.date_game }}</td>
 				<td>{{ match.board_theme }}</td>
 				<td>{{ match.piece_theme }}</td>
-				<td>{{ match.active }}</td>
 				<td>
 					{% if match.winner_id != None %}
 						{{ match.winner_id }}

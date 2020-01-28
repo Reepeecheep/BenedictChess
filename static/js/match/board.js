@@ -7,6 +7,11 @@ $('document').ready(function(){
 		dismissible: false, 
 	});
 
+	if (winner != 'None'){
+		$("#whoplay").hide();
+		$("#winner").show();
+	}
+
 	//var active_pice = '';
 
 	// uscf wikipedia alpha",
@@ -21,23 +26,37 @@ $('document').ready(function(){
 	*/
 
 	function insert_into_database(data){
+		var aux_winner = data.valid[3];
 		$.ajax({
 			url: '/match/insert_move/',
 			data: {
 				'match_id': id,
 				'notation': data.move,
 				'fen': board.fen(),
+				'turn': turn,
 				'piece': data.piece,
-				'source': data.source
+				'source': data.source,
+				'castling': castling,
 			},
 			type: 'post',
 			dataType: 'json',
 			//async: false,
 			success: function (data) {
-				console.log(data);
+				castling = data.castling;
 			}
 		});
-		change_turn();
+		if (aux_winner == false){
+			change_turn();
+		}
+		else{
+			swal({
+				icon: "success",
+				title: "Congrats",
+				text: "Congrats " + turn + " wins",
+			}).then((value) => {
+				location.reload();
+			});
+		}
 	}
 
 	function calculate_attack(source, target, promote, board_pos){
@@ -91,8 +110,8 @@ $('document').ready(function(){
 			turn = 'black';
 		}
 
-		board.orientation(turn);
-		$("#whoplay").html(turn);
+		//board.orientation(turn);
+		$("#whoplay").html(turn + ' moves');
 	}
 
 	var onChange = function(oldPos, newPos) {
@@ -110,7 +129,7 @@ $('document').ready(function(){
 		//if ((orientation === 'white' && piece.search(/^w/) === -1) || (orientation === 'black' && piece.search(/^b/) === -1)) {
 		//	return false;
 		//}
-		if ((turn === 'white' && piece.search(/^w/) === -1) || (turn === 'black' && piece.search(/^b/) === -1)) {
+		if ((turn === 'white' && piece.search(/^w/) === -1) || (turn === 'black' && piece.search(/^b/) === -1) || winner != 'None'){
 			return false;
 		}
 	};

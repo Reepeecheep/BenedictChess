@@ -3,7 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from Apps.match.ChessValidator import Move_Validator
 from django.views.generic import ListView, CreateView
-from Apps.match.models import Match, Match_Move, Match_Castling_Options
+from Apps.match.models import Match, Match_Move#, Match_Castling_Options
 from django.urls import reverse_lazy
 from Apps.match.forms import MatchForm
 '''
@@ -32,8 +32,8 @@ def view(request, id):
     #return HttpResponse("Hello, world. You're at the match index.")
     match = Match.objects.get(id = id)
     moves = Match_Move.objects.filter(match_id = id).order_by('-id')
-    turn = 'white' if len(moves)%2 == 0 else 'black'
-    context = {'match': match, 'moves':moves, 'turn':turn}
+    turn =  ('white' if moves[0].turn == 'black' else 'black') if len(moves) > 0 else 'white'
+    context = {'match': match, 'moves':moves, 'turn':turn, 'winner_id':match.winner_id}
     return render(request, 'match/view.html', context)
 
 @csrf_exempt
@@ -54,9 +54,26 @@ def calculate_attack(request):
 			promote = True
 		
 		move = Move_Validator(source, target, piece, board_fen)
+		my_move = move.validate(promote, match_id)
+		notation = repr(move)
+
+		if my_move[3] != False:
+			notation += '#'
+			match = Match.objects.get(id = request.POST.get('match_id'))
+			players = {'w':match.white_id, 'b':match.black_id}
+			match.winner_id = players[my_move[3]]
+			match.active = 0
+
+			match.save()
 
 		data = {
-			'valid': move.validate(promote, match_id), 'move': repr(move), 'piece': piece, 'source': source, 'target': target, 'match': match_id
+			'valid': my_move,
+			'move': notation,
+			'piece': piece,
+			'source': source,
+			'target': target,
+			'match': match_id,
+			'winner': my_move[3]
 			#'board': move.board, 'board_fen':move.board_fen
 		}
 	return JsonResponse(data)
@@ -65,51 +82,46 @@ def calculate_attack(request):
 def insert_move(request):
 	data = {}
 	if request.method == 'POST':
+
+		piece = request.POST.get('piece')
+		source = request.POST.get('source')
+		castling = request.POST.get('castling')
+
 		move = Match_Move()
 		move.match_id = Match.objects.get(id = request.POST.get('match_id'))
 		move.notation = request.POST.get('notation')
 		move.fen = request.POST.get('fen')
+		move.turn = request.POST.get('turn')
+
+		if (piece[1] in ['K', 'R'] and castling != '-'):
+			if (piece == 'wK' and ('K' in castling or 'Q' in castling)):
+				castling = castling.replace('K', '')
+				castling = castling.replace('Q', '')
+
+			elif (piece == 'bK' and ('k' in castling or 'q' in castling)):
+				castling = castling.replace('k', '')
+				castling = castling.replace('q', '')
+
+			elif (source == 'a1'):
+				castling = castling.replace('Q', '')
+
+			elif (source == 'h1'):
+				castling = castling.replace('K', '')
+
+			elif (source == 'a8'):
+				castling = castling.replace('q', '')
+			elif (source == 'h8'):
+				castling = castling.replace('k', '')
+
+			if castling == '':
+				castling = '-'
+
+		move.castling = castling
+
 		move.save()
-
-		piece = request.POST.get('piece')
-		source = request.POST.get('source')
-
-		if (piece[1] in ['K', 'R']):
-			insert_castling_option(move.match_id, piece, source)
 
 		data['id'] = move.id
 		data['notation'] = move.notation
 		data['fen'] = move.fen
+		data['castling'] = move.castling
 	return JsonResponse(data)
-
-def insert_castling_option(match_id, piece, source):
-	if (piece == 'wK'):
-		castling = Match_Castling_Options.objects.update_or_create(
-			match_id = match_id,
-			defaults = {'white_sort':False, 'white_large':False}
-		)
-	elif (piece == 'bK'):
-		castling = Match_Castling_Options.objects.update_or_create(
-			match_id = match_id,
-			defaults = {'black_sort':False, 'black_large':False}
-		)
-	elif (source == 'a1'):
-		castling = Match_Castling_Options.objects.update_or_create(
-			match_id = match_id,
-			defaults = {'white_large':False}
-		)
-	elif (source == 'h1'):
-		castling = Match_Castling_Options.objects.update_or_create(
-			match_id = match_id,
-			defaults = {'white_sort':False}
-		)
-	elif (source == 'a8'):
-		castling = Match_Castling_Options.objects.update_or_create(
-			match_id = match_id,
-			defaults = {'black_large':False}
-		)
-	elif (source == 'h8'):
-		castling = Match_Castling_Options.objects.update_or_create(
-			match_id = match_id,
-			defaults = {'black_sort':False}
-		)
