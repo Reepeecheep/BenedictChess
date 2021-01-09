@@ -1,1 +1,29 @@
 {% extends 'base/base.html' %}
+
+{% load staticfiles %}
+
+{% block content %}
+
+	<h1>Benedict Chess</h1>
+
+	<div class="carousel carousel-slider center">
+		<a class="carousel-item" href="#one!">
+			<h2>Play and fun!</h2>
+			<img class="image_carousel" src="{% static 'img/1.png' %}">
+		</a>
+		<a class="carousel-item" href="#two!">
+			<h2>Custom boards and pieces</h2>
+			<img class="image_carousel" src="{% static 'img/2.png' %}">
+		</a>
+		<a class="carousel-item" href="#three!">
+			<h2>Admin your database</h2>
+			<img src="{% static 'img/menu1.png' %}">
+		</a>
+	</div>
+
+
+{% endblock %}
+
+{% block extrajs %}
+	<script type="text/javascript" src="{% static 'js/home.js' %}"></script>
+{% endblock %}

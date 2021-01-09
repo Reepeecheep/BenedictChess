@@ -7,30 +7,41 @@ class MatchForm(forms.ModelForm):
 		model = Match
 
 		boards = (
-			('default', 'default'),
-			('chess24_board_theme', 'chess24_board_theme'),
-			('metro_board_theme', 'metro_board_theme'),
-			('leipzig_board_theme', 'leipzig_board_theme'),
-			('wikipedia_board_theme', 'wikipedia_board_theme'),
-			('dilena_board_theme', 'dilena_board_theme'),
-			('uscf_board_theme', 'uscf_board_theme'),
-			('symbol_board_theme', 'symbol_board_theme'),
-			('lichess_board_theme', 'lichess_board_theme'),
-			('tournament_board_theme', 'tournament_board_theme'),
+			('default_board_theme', 'default'),
+			('wood_board_theme', 'wood'),
+			('dark_wood_board_theme', 'dark wood'),
+			('wikipedia_board_theme', 'wikipedia'),
+			('classic_board_theme', 'classic'),
+			('cristal_board_theme', 'cristal'),
+			('white_board_theme', 'white'),
+			('blue_board_theme', 'blue'),
+			('royal_blue_board_theme', 'royal blue'),
+			('green_board_theme', 'green'),
+			('light_green_board_theme', 'light green'),
+			('marble_board_theme', 'marble'),
+			('red_board_theme', 'red'),
+			('pink_board_theme', 'pink'),
 		)
 
 		pieces = (
 			('alpha', 'alpha'),
+			('california', 'california'),
+			('cardinal','cardinal'),
+			('chess7','chess7'),
 			('chess24', 'chess24'),
+			('chess.com', 'chess.com'),
+
 			('dilena', 'dilena'),
-			('gothic', 'gothic'),
 			('leipzig', 'leipzig'),
-			('lichess', 'lichess'),
-			('medieval', 'medieval'),
+			('letter','letter'),
+
 			('metro', 'metro'),
+			('merida','merida'),
 			('symbol', 'symbol'),
 			('uscf', 'uscf'),
 			('wikipedia', 'wikipedia'),
+
+			('shapes','shapes'),
 		)
 
 		fields = [
